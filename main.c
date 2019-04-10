@@ -15,9 +15,11 @@ void getChar();
 void getNonBlank();
 int lex();
 int checkError();
+int isSpace(int c);
 /* Character classes */
 #define LETTER 0
 #define DIGIT 1
+#define ENDLINE 2
 #define UNKNOWN 99
 /* Token codes */
 #define INT_LIT 10
@@ -101,6 +103,8 @@ void getChar() {
       charClass = LETTER;
     else if (isdigit(nextChar))
       charClass = DIGIT;
+    else if (nextChar == '\n')
+      charClass = ENDLINE;
     else charClass = UNKNOWN;
   }
   else
@@ -111,8 +115,25 @@ void getChar() {
 /*****************************************************/
 /* getNonBlank - a function to call getChar until it
 returns a non-whitespace character */
+
+int isSpace(int c){
+  switch(c) {
+    case ' ':
+      return 1;
+    case '\t':
+      return 1;
+    case '\v':
+      return 1;
+    case '\f':
+      return 1;
+    case '\r':
+      return 1;
+    default:
+      return 0;
+  }
+}
 void getNonBlank() {
-  while (isspace(nextChar))
+  while (isSpace(nextChar))
     getChar();
 }
 
@@ -164,6 +185,10 @@ int lex() {
       nextToken = INT_LIT;
       break;
     /* Parentheses and operators */
+    case ENDLINE:
+      printf("Legal Expression\n");
+      token = 21;
+      nextToken = 20;
     case UNKNOWN:
       lookup(nextChar);
       getChar();
@@ -171,15 +196,11 @@ int lex() {
     /* EOF */
     case EOF:
       nextToken = EOF;
-      lexeme[0] = 'E';
-      lexeme[1] = 'O';
-      lexeme[2] = 'F';
-      lexeme[3] = 0;
+      printf("End of file");
       break;
   } /* End of switch */
   if(checkError()){
     printf("Error\n");
   }
-  printf("Next token is: %d, Next lexeme is %s\n", nextToken, lexeme);
   return nextToken;
 }  /* End of function lex */
