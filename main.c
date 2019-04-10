@@ -7,13 +7,14 @@ int charClass;
 char lexeme [100];
 char nextChar;
 int lexLen;
-int token = 20;
-int nextToken = 1;
+int token = 21;
+int nextToken = 21;
 FILE *in_fp, *fopen();
 /* Function declarations */ void addChar();
 void getChar();
 void getNonBlank();
 int lex();
+int checkError();
 /* Character classes */
 #define LETTER 0
 #define DIGIT 1
@@ -52,7 +53,7 @@ int lookup(char ch) {
   switch (ch) {
     case '+':
       addChar();
-      token = nextToken
+      token = nextToken;
       nextToken = ADD_OP;
       break;
     case '-':
@@ -62,7 +63,7 @@ int lookup(char ch) {
       break;
     case '*':
       addChar();
-      token = nextToken
+      token = nextToken;
       nextToken = MULT_OP;
       break;
     case '/':
@@ -109,9 +110,28 @@ void getChar() {
 
 /*****************************************************/
 /* getNonBlank - a function to call getChar until it
-returns a non-whitespace character */ void getNonBlank() {
-while (isspace(nextChar))
-  getChar();
+returns a non-whitespace character */
+void getNonBlank() {
+  while (isspace(nextChar))
+    getChar();
+}
+
+/*****************************************************/
+/* Check if an operand was placed next to an operand or if an operator was
+ placed next to an operator*/
+int checkError(){
+  int isTokenOpperand = 1;
+  int isNextTokenOpperand = 1;
+  if(token > 20 && token < 25){
+    isTokenOpperand = 0;
+  }
+  if(nextToken > 20 && nextToken < 25){
+    isNextTokenOpperand = 0;
+  }
+  if(isNextTokenOpperand == isTokenOpperand){
+    return 1;
+  }
+  return 0;
 }
 
 /*****************************************************/
@@ -157,7 +177,9 @@ int lex() {
       lexeme[3] = 0;
       break;
   } /* End of switch */
-
+  if(checkError()){
+    printf("Error\n");
+  }
   printf("Next token is: %d, Next lexeme is %s\n", nextToken, lexeme);
   return nextToken;
 }  /* End of function lex */
