@@ -7,8 +7,8 @@ int charClass;
 char lexeme [100];
 char nextChar;
 int lexLen;
-int token;
-int nextToken;
+int token = 20;
+int nextToken = 1;
 FILE *in_fp, *fopen();
 /* Function declarations */ void addChar();
 void getChar();
@@ -33,9 +33,12 @@ int lex();
 /******************************************************/
 /* main driver */
 int main() {
-  /* Open the input data file and process its contents */ if ((in_fp = fopen("front.in", "r")) == NULL)
-  printf("ERROR - cannot open front.in \n"); else {
-    getChar(); do {
+  /* Open the input data file and process its contents */
+  if ((in_fp = fopen("front.in", "r")) == NULL)
+    printf("ERROR - cannot open front.in \n");
+  else {
+    getChar();
+    do {
       lex();
     } while (nextToken != EOF);
   }
@@ -47,33 +50,30 @@ int main() {
 token */
 int lookup(char ch) {
   switch (ch) {
-    case '(':
-      addChar();
-      nextToken = LEFT_PAREN;
-      break;
-    case ')':
-      addChar();
-      nextToken = RIGHT_PAREN;
-      break;
     case '+':
       addChar();
+      token = nextToken
       nextToken = ADD_OP;
       break;
     case '-':
       addChar();
+      token = nextToken;
       nextToken = SUB_OP;
       break;
     case '*':
       addChar();
+      token = nextToken
       nextToken = MULT_OP;
       break;
     case '/':
       addChar();
+      token = nextToken;
       nextToken = DIV_OP;
       break;
     default:
-    addChar();
-    nextToken = EOF;
+      addChar();
+      token = nextToken;
+      nextToken = EOF;
     break;
   }
   return nextToken;
@@ -129,6 +129,7 @@ int lex() {
         addChar();
         getChar();
       }
+      token = nextToken;
       nextToken = IDENT;
       break;
     /* Parse integer literals */
@@ -139,6 +140,7 @@ int lex() {
         addChar();
         getChar();
       }
+      token = nextToken;
       nextToken = INT_LIT;
       break;
     /* Parentheses and operators */
@@ -156,6 +158,6 @@ int lex() {
       break;
   } /* End of switch */
 
-  printf("Next token is: %d, Next lexeme is %s\n",
-  nextToken, lexeme); return nextToken;
+  printf("Next token is: %d, Next lexeme is %s\n", nextToken, lexeme);
+  return nextToken;
 }  /* End of function lex */
